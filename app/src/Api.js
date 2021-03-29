@@ -36,7 +36,7 @@ export default {
                 Accept: 'application/json',
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify({name,email, password})
+            body: JSON.stringify({name, email, password})
         });
         const json = await req.json();
         return json;
