@@ -19,17 +19,27 @@ import {
     FakeSwiper,
 
     PageBody,
+
     UserInfoArea,
     UserAvatar,
     UserInfo,
     UserInfoName,
     UserFavButton,
 
+    BackButton,
     LoadingIcon,
-    ServiceArea,
-    TestimonialArea,
-    BackButton
 
+    ServiceArea,
+    ServicesTitle,
+    ServiceItem,
+    ServiceInfo,
+    ServiceName,
+    ServicePrice,
+    ServiceChooseButton,
+    ServiceChooseBtnText,
+
+    TestimonialArea,
+    
 } from './styles';
 
 import Api from '../../Api';
@@ -105,16 +115,23 @@ export default () => {
                         <LoadingIcon size="large" color="#000" />
                     }
 
-                    <ServiceArea>
-                        <ServicesTitle>Lista de Serviços</ServicesTitle>
+                    {userInfo.services &&    
+                        <ServiceArea>
+                            <ServicesTitle>Lista de Serviços</ServicesTitle>
 
-                        {userInfo.services.map((item, key)=> (
-                            <ServiceItem>
-                                
-                            </ServiceItem>
-                        ))}
-                    </ServiceArea>
-
+                            {userInfo.services.map((item, key)=>(
+                                <ServiceItem key={key}>
+                                    <ServiceInfo>
+                                        <ServiceName>{item.name}</ServiceName>
+                                        <ServicePrice>R$ {item.price}</ServicePrice>
+                                    </ServiceInfo>
+                                    <ServiceChooseButton>
+                                        <ServiceChooseBtnText>Agendar</ServiceChooseBtnText>
+                                    </ServiceChooseButton>
+                                </ServiceItem>  
+                            ))}
+                        </ServiceArea>
+                    }
                     <TestimonialArea>
 
                     </TestimonialArea>
