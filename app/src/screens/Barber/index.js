@@ -6,7 +6,10 @@ import Swiper from 'react-native-swiper';
 import Stars from '../../components/Stars';
 
 import FavoriteIcon from '../../assets/favorite.svg';
+import FavoriteFullIcon from '../../assets/favorite_full.svg';
 import BackIcon from '../../assets/back.svg';
+import NavPrevIcon from '../../assets/nav_prev.svg';
+import NavNextIcon from '../../assets/nav_next.svg';
 
 import {
     Container,
@@ -39,7 +42,10 @@ import {
     ServiceChooseBtnText,
 
     TestimonialArea,
-    
+    TestimonialItem,
+    TestimonialInfo,
+    TestimonialName,
+    TestimonialBody    
 } from './styles';
 
 import Api from '../../Api';
@@ -57,6 +63,9 @@ export default () => {
     });
 
     const [loading, setLoading] = useState(false);
+    const [favorited, setFavorited] = useState(false);
+    const [selectedService, setSelectedService] = useState(null);
+    const [showModal, setShowModal] = useState(false);
 
     useEffect(()=> {
         const getBarberInfo = async () => {
@@ -65,16 +74,27 @@ export default () => {
             let json = await Api.getBarber(userInfo.id);
             if (json.error == '') {
                 setUserInfo(json.data);
+                setFavorited(json.data.favorited);
             } else {
                 alert("Erro: "+ json.error);
             }
 
             setLoading(false);
         }
+        getBarberInfo();
     }, []);
 
     const handleBackButton = () => {
         navigation.goBack();
+    };
+
+    const handleFavClick = () => {
+        setFavorited(!favorited);
+        Api.setFavorite(userInfo.id);
+    };
+
+    const handleServiceChoose = (key) => {
+        set
     };
 
     return(
@@ -106,8 +126,12 @@ export default () => {
                             <UserInfoName> {userInfo.name} </UserInfoName>
                             <Stars stars={userInfo.stars} showNumber={true} />
                         </UserInfo>
-                        <UserFavButton>
-                            <FavoriteIcon width="24" height="24" fill="#FF0000"/>
+                        <UserFavButton onPress={handleFavClick}>
+                            {favorited ?
+                                <FavoriteFullIcon width="24" height="24" fill="#FF0000"/>
+                                :
+                                <FavoriteIcon width="24" height="24" fill="#FF0000"/>
+                            }
                         </UserFavButton>
                     </UserInfoArea>
 
@@ -125,16 +149,35 @@ export default () => {
                                         <ServiceName>{item.name}</ServiceName>
                                         <ServicePrice>R$ {item.price}</ServicePrice>
                                     </ServiceInfo>
-                                    <ServiceChooseButton>
+                                    <ServiceChooseButton onPress={() => handleServiceChoose(key)}>
                                         <ServiceChooseBtnText>Agendar</ServiceChooseBtnText>
                                     </ServiceChooseButton>
                                 </ServiceItem>  
                             ))}
                         </ServiceArea>
                     }
-                    <TestimonialArea>
 
-                    </TestimonialArea>
+                    {userInfo.testimonials && userInfo.testimonials.length > 0 &&
+                        <TestimonialArea>
+                            <Swiper
+                                style={{height: 110}}
+                                showsPagination={false}
+                                showsButtons={true}
+                                prevButton={<NavPrevIcon width="35" height="35" fill="#000"/>}
+                                nextButton={<NavNextIcon width="35" height="35" fill="#000"/>}
+                            >
+                                {userInfo.testimonials.map((item, key) => (
+                                    <TestimonialItem key={key}>
+                                        <TestimonialInfo>
+                                            <TestimonialName>{item.name}</TestimonialName>
+                                            <Stars stars={item.rate} showNumber={false} />
+                                        </TestimonialInfo>
+                                        <TestimonialBody>{item.body}</TestimonialBody>
+                                    </TestimonialItem>
+                                ))}
+                            </Swiper>
+                        </TestimonialArea>
+                    }
                 </PageBody>
             </Scroller>
             <BackButton onPress={handleBackButton}>
